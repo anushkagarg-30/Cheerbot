@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Bot</title>
+    <link rel="stylesheet" href="{% static 'chat.css' %}">
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<style>
+body{
+  background-color: #EEEEEE;
+}
+.img1{
+  z-index:-1;
+  position: absolute;
+  top:0px;
+  height:100%;
+  width:50%;
+}
+.img2{
+  z-index:-1;
+  position: absolute;
+  top:0px;
+  left:640px;
+  height:100%;
+  width:50%;
+}
+h1{
+  position: absolute;
+  bottom:460px;
+  right:30px;
+  font-size: 65px;
+  font-weight: 600;
+  color: #fdfdfe;
+  text-shadow: 0px 0px 5px #b393d3, 0px 0px 10px #b393d3, 0px 0px 10px #b393d3,
+      0px 0px 20px #b393d3;
+}
+
+</style>
+<body>
+    <!-- CHAT BAR BLOCK -->
+    <div class="mainbody">
+
+        <img class="img1" src="https://www.voicesofyouth.org/sites/voy/files/styles/blog_teaser/public/images/2020-06/e7d79d36-1d7b-4925-a0bf-ac448d9b26ca.jpeg?h=201e2d68&itok=RnJf9EZV"></img>
+        <img class="img2" src="https://media3.giphy.com/media/Rb0qg5uHQXQ1rP6Pw5/giphy.gif"></img>
+    </div>
+    <div class="chat-bar-collapsible">
+        <button id="chat-button" type="button" class="collapsible">Chat with us!
+            <i id="chat-icon" style="color: #fff;" class="fa fa-fw fa-comments-o"></i>
+        </button>
+
+        <div class="content">
+            <div class="full-chat-block">
+                <!-- Message Container -->
+                <div class="outer-container">
+                    <div class="chat-container">
+                        <!-- Messages -->
+                        <div id="chatbox">
+                            <h5 id="chat-timestamp"></h5>
+                            <p id="botStarterMessage" class="botText"><span>Loading...</span></p>
+                        </div>
+
+                        <!-- User input box -->
+                        <div class="chat-bar-input-block">
+                            <div id="userInput">
+                                <input id="textInput" class="input-box" type="text" name="msg"
+                                    placeholder="Tap 'Enter' to send a message">
+                                <p></p>
+                            </div>
+
+                            <div class="chat-bar-icons">
+                                <i id="chat-icon" style="color: crimson;" class="fa fa-fw fa-heart"
+                                    onclick="heartButton()"></i>
+                                <i id="chat-icon" style="color: #333;" class="fa fa-fw fa-send"
+                                    onclick="sendButton()"></i>
+                            </div>
+                        </div>
+
+                        <div id="chat-bar-bottom">
+                            <p></p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+
+for (let i = 0; i < coll.length; i++) {
+    coll[i].addEventListener("click", function () {
+        this.classList.toggle("active");
+
+        var content = this.nextElementSibling;
+
+        if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+        }
+
+    });
+}
+
+function getTime() {
+    let today = new Date();
+    hours = today.getHours();
+    minutes = today.getMinutes();
+
+    if (hours < 10) {
+        hours = "0" + hours;
+    }
+
+    if (minutes < 10) {
+        minutes = "0" + minutes;
+    }
+
+    let time = hours + ":" + minutes;
+    return time;
+}
+
+// Gets the first message
+function firstBotMessage() {
+    let firstMessage = "How's it going?"
+    document.getElementById("botStarterMessage").innerHTML = '<p class="botText"><span>' + firstMessage + '</span></p>';
+
+    let time = getTime();
+
+    $("#chat-timestamp").append(time);
+    document.getElementById("userInput").scrollIntoView(false);
+}
+
+firstBotMessage();
+
+// Retrieves the response
+function getHardResponse(userText) {
+    let botResponse = getBotResponse(userText);
+    let botHtml = '<p class="botText"><span>' + botResponse + '</span></p>';
+    $("#chatbox").append(botHtml);
+
+    document.getElementById("chat-bar-bottom").scrollIntoView(true);
+}
+
+//Gets the text text from the input box and processes it
+function getResponse() {
+    let userText = $("#textInput").val();
+
+    if (userText == "") {
+        userText = "I love Code Palace!";
+    }
+
+    let userHtml = '<p class="userText"><span>' + userText + '</span></p>';
+
+    $("#textInput").val("");
+    $("#chatbox").append(userHtml);
+    document.getElementById("chat-bar-bottom").scrollIntoView(true);
+
+    setTimeout(() => {
+        getHardResponse(userText);
+    }, 1000)
+
+}
+
+// Handles sending text via button clicks
+function buttonSendText(sampleText) {
+    let userHtml = '<p class="userText"><span>' + sampleText + '</span></p>';
+
+    $("#textInput").val("");
+    $("#chatbox").append(userHtml);
+    document.getElementById("chat-bar-bottom").scrollIntoView(true);
+
+    //Uncomment this if you want the bot to respond to this buttonSendText event
+    // setTimeout(() => {
+    //     getHardResponse(sampleText);
+    // }, 1000)
+}
+
+function sendButton() {
+    getResponse();
+}
+
+function heartButton() {
+    buttonSendText("Heart clicked!")
+}
+
+// Press enter to send a message
+$("#textInput").keypress(function (e) {
+    if (e.which == 13) {
+        getResponse();
+    }
+});
+
+function getBotResponse(input) {
+    //rock paper scissors
+  if(input=="how to help my child who’s stressed about placements?"){
+    return "Where you go for help will depend on the nature of the problem and/or symptoms and what best fits you. Often, the best place to start is by talking with someone you trust about your concerns, such as a family member, friend, clergy, healthcare provider, or other professionals. Having this social support is essential in healing from mental illness, and you will be able to ask them for referrals or recommendations for trusted mental health practitioners. Search for mental health resources in your area.\nSecondly, there are people and places throughout Nebraska that provide services to talk, to listen, and to help you on your journey to recovery. Thirdly, many people find peer support a helpful tool that can aid in their recovery. There are a variety of organizations that offer support groups for consumers, their family members, and friends. Some support groups are peer led while others may be led by a mental health professional.";
+  }
+  else if(input=="how do i handle placement stress?"){
+    return "To handle stress and anxiety regarding placements, you can talk to a confidante (like me), prepare for placement in advance, focus on the big picture, put together a perfect resume, while preparing for placement, circle out your weak areas and work towards turning them into your strengths, stop comparing yourself to others, and work on your interpersonal skills.";
+  }
+  else if(input=="how to cope with uncertainty of the future?"){
+    return "Accept that you cannot control everything, you can never hope to achieve success unless we are willing to embrace the unknown. By recognising the negative, you can take action and make the changes necessary to minimise or eliminate it altogether. By becoming aware of your fear you can address it and limit its impacts on reaching your goals. Rather than seeing failure as a negative, fixed outcome, learn how to view it as a lesson. Embrace uncertainty by taking risks.";
+  }
+  else if(input==="how to deal with rejection in placements?"){
+    return "It can be difficult to accept rejection or disappointment when you receive it. You may even feel personally hurt and take it personally. Remember, It does not reflect your efforts, nor does it reflect who you are or your worth. Don’t panic, formulate a strategy for the future and know that it happens to everyone.";
+  }
+  else if(input==="how to deal with failure?"){
+    return "Give yourself permission to feel, practise self-compassion, reflect on the experience and adopt a growth mindset, and revisit your goals and create a plan for the future.";
+  }
+  else if(input==="how do i stay motivated during placements?"){
+    return "Ask for detailed feedback. The key thing to do after a rejection is to think about what happened, and how you can learn from it. Review and reflect. Identify learnings and build a personal development plan. Be philosophical. Refine your search. Build resilience.";
+  }
+    // Simple responses
+    if (input == "hello") {
+        return "Hello there!";
+    } else if (input == "goodbye") {
+        return "Talk to you later!";
+    } else {
+        return "Try asking something else!";
+    }
+}
+
+</script>
+</html>
+
+<!-- myproject\Scripts\activate.bat -->
+<!-- py manage.py runserver -->
